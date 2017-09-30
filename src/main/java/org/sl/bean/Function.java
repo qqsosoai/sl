@@ -8,7 +8,7 @@ import java.util.Date;
  * 功能实体
  */
 public class Function implements Serializable,Cloneable {
-    private Integer idbig;//主键ID
+    private Integer id;//主键ID
     private String functionCode;//功能编码
     private String functionName;//功能名称
     private String funcUrl;//功能URL
@@ -21,7 +21,7 @@ public class Function implements Serializable,Cloneable {
 
     public Function(Integer idbig, String functionCode,
                     String functionName, String funcUrl, Integer parentId, Date creationTime) {
-        this.idbig = idbig;
+        this.id = idbig;
         this.functionCode = functionCode;
         this.functionName = functionName;
         this.funcUrl = funcUrl;
@@ -29,12 +29,12 @@ public class Function implements Serializable,Cloneable {
         this.creationTime = creationTime;
     }
 
-    public Integer getIdbig() {
-        return idbig;
+    public Integer getId() {
+        return id;
     }
 
-    public void setIdbig(Integer idbig) {
-        this.idbig = idbig;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getFunctionCode() {
@@ -88,7 +88,7 @@ public class Function implements Serializable,Cloneable {
     @Override
     public String toString() {
         return "Function{" +
-                "idbig=" + idbig +
+                "id=" + id +
                 ", functionCode='" + functionCode + '\'' +
                 ", functionName='" + functionName + '\'' +
                 ", funcUrl='" + funcUrl + '\'' +

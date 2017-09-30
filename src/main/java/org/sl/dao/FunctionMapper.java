@@ -11,7 +11,7 @@ import java.util.List;
  * 功能Dao层
  */
 @Repository
-public interface FcuntionMapper {
+public interface FunctionMapper {
     /**
      * 根据角色ID查询一级菜单
      * @param roleId 角色ID

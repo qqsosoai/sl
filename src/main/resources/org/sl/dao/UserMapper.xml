@@ -8,9 +8,6 @@
             <if test="loginCode!=null and loginCode!=''">
                 loginCode=#{loginCode}
             </if>
-            <if test="password!=null and password!=''">
-                and password=#{password}
-            </if>
             <if test="isStart!=null and isStart&gt;0 and isStart&lt;3">
                 and isStart=#{isStart}
             </if>
