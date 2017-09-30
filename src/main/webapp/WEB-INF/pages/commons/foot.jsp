@@ -79,6 +79,7 @@
 	<script src="/static/js/jquery.history.js"></script>
 	<!-- application script for Charisma demo -->
 	<script src="/static/js/charisma.js"></script>
+	<script src="/static/SLjs/main.js"></script>
 
 	<body>
 </html>

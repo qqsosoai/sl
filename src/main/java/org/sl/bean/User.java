@@ -42,6 +42,11 @@ public class User implements Serializable,Cloneable{
     public User() {
     }
 
+    public User(Integer id, String password) {
+        this.id = id;
+        this.password = password;
+    }
+
     public Integer getId() {
         return id;
     }

@@ -26,4 +26,12 @@ public class UserServiceImpl implements UserService {
     public User findByUser(User user) throws Exception{
         return mapper.findByUser(user);
     }
+
+    public boolean updateUser(User user) throws Exception {
+        if (mapper.updateByUser(user)>0)
+            return true;
+        return false;
+    }
+
+
 }

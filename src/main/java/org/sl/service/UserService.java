@@ -22,4 +22,12 @@ public interface UserService {
      * @return 返回用户完整信息
      */
     User findByUser(User user)throws Exception;
+
+    /**
+     * 修改用户密码
+     * @param user 用户对象
+     * @return
+     * @throws Exception
+     */
+    boolean updateUser(User user)throws Exception;
 }

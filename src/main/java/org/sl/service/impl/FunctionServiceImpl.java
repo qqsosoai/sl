@@ -25,12 +25,15 @@ public class FunctionServiceImpl implements FunctionService {
     public List<Menu> findUserMenuByRoleId(Integer roleId) throws Exception {
         List<Menu> menus=new ArrayList<Menu>();
         List<Function> mainFunction = mapper.findMainFunctionByRoleId(roleId);
+        if (mainFunction==null){
+            return menus;
+        }
         for(Function f:mainFunction){
             Menu menu=new Menu();
             menu.setMainMenu(f);
             f.setRoleId(roleId);
             List<Function> childFcuntion = mapper.findChildFcuntion(f);
-            if (childFcuntion.size()<1){
+            if (childFcuntion==null){
                 continue;
             }
             menu.setChildMenu(childFcuntion);

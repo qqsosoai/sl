@@ -79,8 +79,8 @@
 				<!-- theme selector starts -->
 				<div class="btn-group pull-right theme-container" >
 					<ul class="nav">
-						<li><a href="#">你好, ${user.loginCode }</a></li>
-						<li><a href="#">角色：${user.roleName }</a></li>
+						<li><a href="#">你好, ${loginUser.userName}</a></li>
+						<li><a href="#">角色：${loginUser.roleName}</a></li>
 						<li><a href="/main.html">首页</a></li>
 						<li><a href="#">购物车</a></li>
 						<li><a href="#">留言板</a></li>
