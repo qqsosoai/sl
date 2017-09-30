@@ -31,7 +31,6 @@ public class FunctionServiceImpl implements FunctionService {
             f.setRoleId(roleId);
             List<Function> childFcuntion = mapper.findChildFcuntion(f);
             if (childFcuntion.size()<1){
-                menus.add(menu);
                 continue;
             }
             menu.setChildMenu(childFcuntion);

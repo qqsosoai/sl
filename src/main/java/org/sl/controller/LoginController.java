@@ -8,6 +8,7 @@ import org.sl.service.UserService;
 import org.sl.util.Constants;
 import org.sl.util.Menu;
 import org.sl.util.md5.MyMd5;
+import org.sl.util.redis.CacheApi;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -30,6 +31,8 @@ public class LoginController extends BaseController {
     private UserService service;
     @Resource
     private FunctionService functionService;
+    @Resource(name = "redisApi")
+    private CacheApi cache;
     @RequestMapping(value = "login.html",method = RequestMethod.GET)//请求主页面
     public String toLogin(){
         return "login";
@@ -68,12 +71,18 @@ public class LoginController extends BaseController {
         if (user==null){
             return "redirect:/login.html";
         }
+        List<Menu> menus=null;
         try {
-            List<Menu> menus = functionService.findUserMenuByRoleId(user.getRoleId());
-            session.setAttribute(Constants.SESSION_LOGIN_USER_MENU,menus);
+            if (!cache.exist(Constants.CACHE_MENU+user.getRoleId())) {//缓存中没有
+                menus = functionService.findUserMenuByRoleId(user.getRoleId());//查询数据库
+                session.setAttribute(Constants.SESSION_LOGIN_USER_MENU, menus);//将菜单放入session
+                cache.set(Constants.CACHE_MENU+user.getRoleId(),user.getRoleId());//添加缓存
+            }else{
+                 menus = (List<Menu>)cache.get(Constants.CACHE_MENU + user.getRoleId());
+            }
             String json = JSON.toJSONString(menus);
             logger.debug(json);
-            model.addAttribute("jsonMenu",json);
+            model.addAttribute("jsonMenu", json);
         } catch (Exception e) {
             e.printStackTrace();
         }

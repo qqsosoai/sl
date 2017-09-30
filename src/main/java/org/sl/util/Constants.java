@@ -7,4 +7,5 @@ package org.sl.util;
 public class Constants {
     public static final String SESSION_LOGIN_USER="loginUser";
     public static final String SESSION_LOGIN_USER_MENU="loginUserMenu";
+    public static final String CACHE_MENU="cacheMenu";
 }
