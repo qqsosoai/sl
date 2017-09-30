@@ -68,9 +68,8 @@ public class RedisApi implements CacheApi {
             e.printStackTrace();
             return false;
         }
-
     }
-
+    //添加key，当key已存在则返回false
     public boolean add(Object key, Object value, long date) {
         if (redisTemplate.hasKey(key)){
             return false;
@@ -83,12 +82,22 @@ public class RedisApi implements CacheApi {
             return false;
         }
     }
-
+    //判断该key是否存在
     public boolean exist(Object key) {
         return redisTemplate.hasKey(key);
     }
-
+    //根据key获取value
     public Object get(Object key) {
         return redisTemplate.opsForValue().get(key);
+    }
+    //根据key删除value
+    public boolean delete(Object key) {
+        try {
+            redisTemplate.delete(key);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }

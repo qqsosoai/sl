@@ -47,9 +47,9 @@
     <!--配置redis连接工厂-->
     <bean id="jedisConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
         <property name="poolConfig" ref="jedisPoolConfig"/>
-        <property name="hostName" value="192.168.31.59"/>
-        <property name="port" value="6379"/>
-        <property name="usePool" value="true"/>
+        <property name="hostName" value="${cache.hostName}"/>
+        <property name="port" value="${cache.port}"/>
+        <property name="usePool" value="${cache.usePool}"/>
     </bean>
     <!--声明redis模板-->
     <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">

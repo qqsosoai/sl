@@ -76,7 +76,7 @@ public class LoginController extends BaseController {
             if (!cache.exist(Constants.CACHE_MENU+user.getRoleId())) {//缓存中没有
                 menus = functionService.findUserMenuByRoleId(user.getRoleId());//查询数据库
                 session.setAttribute(Constants.SESSION_LOGIN_USER_MENU, menus);//将菜单放入session
-                cache.set(Constants.CACHE_MENU+user.getRoleId(),user.getRoleId());//添加缓存
+                cache.set(Constants.CACHE_MENU+user.getRoleId(),menus);//添加缓存
             }else{
                  menus = (List<Menu>)cache.get(Constants.CACHE_MENU + user.getRoleId());
             }

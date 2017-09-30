@@ -47,4 +47,11 @@ public interface CacheApi {
      * @return
      */
     Object get(Object key);
+
+    /**
+     * 根据key删除value
+     * @param key
+     * @return 是否删除成功
+     */
+    boolean delete(Object key);
 }
