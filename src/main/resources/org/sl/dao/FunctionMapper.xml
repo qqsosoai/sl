@@ -1,0 +1,14 @@
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sl.dao.FunctionMapper">
+    <select id="findMainFunctionByRoleId" resultType="Function">
+      SELECT a.* FROM au_function a,au_authority b
+        WHERE a.`id`=b.`functionId` AND a.`parentId`=0 AND b.`roleId`=#{roleId};
+    </select>
+    <select id="findChildFcuntion" resultType="Function" parameterType="Function">
+        SELECT a.* FROM au_function a,au_authority b
+          WHERE a.`id`=b.`functionId` AND a.`parentId`=#{id}
+          AND b.`roleId`=#{roleId} ORDER BY a.`id`;
+    </select>
+
+</mapper>
