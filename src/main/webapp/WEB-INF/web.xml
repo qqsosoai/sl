@@ -29,7 +29,7 @@
   </listener>
   <context-param>
     <param-name>webAppRootKey</param-name>
-    <param-value>slSys.root</param-value>
+    <param-value>sl.root</param-value>
   </context-param>
   <context-param>
     <param-name>log4jConfigLocation</param-name>

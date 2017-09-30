@@ -11,7 +11,6 @@ import org.sl.util.md5.MyMd5;
 import org.sl.util.redis.CacheApi;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -94,30 +93,5 @@ public class LoginController extends BaseController {
         session.invalidate();
         this.setUser(null);
         return "redirect:/login.html";
-    }
-
-    @RequestMapping(value = "/updatePwd",method = RequestMethod.POST)
-    @ResponseBody
-    public Object updatePwd(String password,String newPassword,HttpSession session){
-        if (StringUtils.isEmpty(password)
-                ||StringUtils.isEmpty(newPassword)){//判断前台数据是否正常
-            return "notFind";
-        }
-        User user = getUser();
-        if (!MyMd5.isMd5String(password,user.getPassword())){//原密码是否匹配
-            return "pwdEor";
-        }
-        String newpass = MyMd5.toMd5String(newPassword);
-        User user1=new User(user.getId(),newpass);
-        try {
-            if (!service.updateUser(user1)){//修改失败
-                return "notFind";
-            }
-            user.setPassword(newpass);
-            return "success";
-        } catch (Exception e) {//出现异常
-            e.printStackTrace();
-            return "notFind";
-        }
     }
 }
