@@ -79,6 +79,9 @@
 	<script src="/static/js/jquery.history.js"></script>
 	<!-- application script for Charisma demo -->
 	<script src="/static/js/charisma.js"></script>
+	<script src="/static/js/ajaxfileupload.js"></script>
+	<script src="/static/js/json2.js"></script>
+	<script src="/static/medire/WdatePicker.js"></script>
 	<script src="/static/SLjs/main.js"></script>
 
 	<body>

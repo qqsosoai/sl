@@ -4,9 +4,11 @@ import org.apache.log4j.Logger;
 import org.sl.bean.User;
 import org.sl.dao.UserMapper;
 import org.sl.service.UserService;
+import org.sl.util.PageUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 /**
@@ -31,6 +33,15 @@ public class UserServiceImpl implements UserService {
         if (mapper.updateByUser(user)>0)
             return true;
         return false;
+    }
+
+    public List<User> findByUsers(User user, PageUtil util) throws Exception {
+        Integer index=(util.getPageIndex()-1)*util.getPageSize();
+        return mapper.findByUsers(user,index,util.getPageSize());
+    }
+
+    public Integer findByUsersCount(User user) throws Exception {
+        return mapper.findByLoginCount(user);
     }
 
 

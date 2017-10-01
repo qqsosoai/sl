@@ -24,7 +24,7 @@ import java.util.List;
  * 用户有关于登录的Controller
  */
 @Controller
-public class LoginController extends BaseController {
+public class LoginController {
     private Logger logger=Logger.getLogger(LoginController.class);
     @Resource
     private UserService service;
@@ -57,7 +57,6 @@ public class LoginController extends BaseController {
                 return "pwdEor";
             }
             session.setAttribute(Constants.SESSION_LOGIN_USER,loginUser);
-            setUser(loginUser);
             return "success";
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,7 +65,7 @@ public class LoginController extends BaseController {
     }
     @RequestMapping("main.html")//请求主页面
     public String toMain(Model model,HttpSession session){
-        User user = getUser();
+        User user = (User) session.getAttribute(Constants.SESSION_LOGIN_USER);
         if (user==null){
             return "redirect:/login.html";
         }
@@ -74,11 +73,11 @@ public class LoginController extends BaseController {
         try {
             if (!cache.exist(Constants.CACHE_MENU+user.getRoleId())) {//缓存中没有
                 menus = functionService.findUserMenuByRoleId(user.getRoleId());//查询数据库
-                session.setAttribute(Constants.SESSION_LOGIN_USER_MENU, menus);//将菜单放入session
                 cache.set(Constants.CACHE_MENU+user.getRoleId(),menus);//添加缓存
             }else{
                  menus = (List<Menu>)cache.get(Constants.CACHE_MENU + user.getRoleId());
             }
+            session.setAttribute(Constants.SESSION_LOGIN_USER_MENU, menus);//将菜单放入session
             String json = JSON.toJSONString(menus);
             logger.debug(json);
             model.addAttribute("jsonMenu", json);
@@ -91,7 +90,6 @@ public class LoginController extends BaseController {
     @RequestMapping("/logout.html")//注销登录
     public String logout(HttpSession session){
         session.invalidate();
-        this.setUser(null);
         return "redirect:/login.html";
     }
 }

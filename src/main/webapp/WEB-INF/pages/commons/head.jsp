@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html;charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,6 +64,7 @@
 	<!-- The fav icon -->
 	<link rel="shortcut icon" href="/static/img/favicon.ico">
 	<script type="text/javascript"> var tt = '${jsonMenu}';</script>
+	<script src="/static/js/jquery-1.8.3.min.js"></script>
 </head>
 
 <body>

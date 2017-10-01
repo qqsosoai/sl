@@ -13,9 +13,47 @@
             </if>
         </trim>
     </select>
-
+    <select id="findByUsers" resultType="User">
+        SELECT <include refid="all"/> from au_user
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="user.loginCode!=null and user.loginCode!=''">
+                loginCode=#{user.loginCode}
+            </if>
+            <if test="user.userName!=null and user.userName!=''">
+                AND userName LIKE concat('%',#{user.userName},'%')
+            </if>
+            <if test="user.referCode!=null and user.referCode!=''">
+                AND referCode LIKE concat('%',#{user.referCode},'%')
+            </if>
+            <if test="user.roleId!=null">
+                AND roleId=#{user.roleId}
+            </if>
+            <if test="user.isStart!=null and user.isStart&gt;0 and user.isStart&lt;3">
+                and isStart=#{user.isStart}
+            </if>
+        </trim>
+        ORDER BY createTime DESC
+        limit #{pageIndex},#{pageSize};
+    </select>
     <select id="findByLoginCount" resultType="int" parameterType="User">
-        select COUNT(1) from au_user where loginCode=#{loginCode}
+        select COUNT(1) from au_user
+        <trim prefix="where" prefixOverrides="and | or">
+            <if test="loginCode!=null and loginCode!=''">
+                loginCode=#{loginCode}
+            </if>
+            <if test="userName!=null and userName!=''">
+                AND userName LIKE concat('%',#{userName},'%')
+            </if>
+            <if test="referCode!=null and referCode!=''">
+                AND referCode LIKE concat('%',#{referCode},'%')
+            </if>
+            <if test="roleId!=null">
+                AND roleId=#{roleId}
+            </if>
+            <if test="isStart!=null and isStart&gt;0 and isStart&lt;3">
+                and isStart=#{isStart}
+            </if>
+        </trim>
     </select>
     <update id="updateByUser" parameterType="User">
         UPDATE au_user
