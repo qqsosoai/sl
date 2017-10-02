@@ -17,7 +17,7 @@
         SELECT <include refid="all"/> from au_user
         <trim prefix="where" prefixOverrides="and | or">
             <if test="user.loginCode!=null and user.loginCode!=''">
-                loginCode=#{user.loginCode}
+                AND loginCode LIKE concat('%',#{user.loginCode},'%')
             </if>
             <if test="user.userName!=null and user.userName!=''">
                 AND userName LIKE concat('%',#{user.userName},'%')

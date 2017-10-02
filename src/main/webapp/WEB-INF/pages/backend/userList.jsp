@@ -18,7 +18,7 @@
         </div>
 
         <div class="box-content">
-            <form action="/backend/userlist.html" method="post">
+            <form>
                 <div class="searcharea">
                     用户名称:
                     <input type="text" id="loginCode" value="" />
@@ -37,7 +37,7 @@
                         <option value="1">启用</option>
                         <option value="2">未启用</option>
                     </select>
-                    <button type="submit" class="btn btn-primary"><i class="icon-search icon-white"></i> 查询 </button>
+                    <button type="button" class="btn btn-primary"><i class="icon-search icon-white"></i> 查询 </button>
                 </div>
             </form>
             <table class="table table-striped table-bordered bootstrap-datatable">
@@ -60,7 +60,7 @@
                         <td class="center">${user.userTypeName }</td>
                         <td class="center">${user.referCode}</td>
                         <td class="center">
-                            <input type="checkbox" <c:if test="${user.isStart == 1 }">checked="true"</c:if> disabled="disabled">
+                            <input type="checkbox" <c:if test="${user.isStart == 1}">checked="true"</c:if> disabled="disabled">
                         </td>
                         <td class="center">
                             <fmt:formatDate value="${user.createTime }" pattern="yyyy-MM-dd"/>

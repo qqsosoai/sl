@@ -1,6 +1,7 @@
 package org.sl.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.sun.deploy.net.HttpResponse;
 import org.apache.log4j.Logger;
 import org.sl.bean.Role;
 import org.sl.bean.User;
@@ -18,7 +19,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -77,26 +81,30 @@ public class UserController{
         model.addAttribute("jsonMenu",JSON.toJSONString(menus));
         return "/backend/userList";
     }
-    @RequestMapping(value = "/backend/userlist.html",method = RequestMethod.POST)//处理用户主页面分页请求
-    @ResponseBody
-    public Object UserAjax(PageUtil util,User user){
+    @RequestMapping(value = "/backend/userlist.html",method = RequestMethod.POST)
+    //处理用户主页面分页请求
+    public void UserAjax(PageUtil util, User user,HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding("utf-8");
+        PrintWriter writer = response.getWriter();
         if (util==null||user==null){
-            return null;
+            return;
         }
         try {
             util.setSqlCount(service.findByUsersCount(user));
             List<User> users = service.findByUsers(user, util);
             String jsonUtil = JSON.toJSONString(util);
             if (user==null || users.size()<1){
-                return "["+jsonUtil+","+"{\"flag\":\"false\"}]";
+                writer.print("["+jsonUtil+","+"{\"flag\":\"false\"}]");
+                writer.flush();writer.close();
+                return;
             }
             String json = JSON.toJSONString(users).replace("]", "," + jsonUtil + "]");
             logger.debug(json);
-            return json;
+            writer.print(json);
+            writer.flush();writer.close();
         } catch (Exception e) {
             e.printStackTrace();
-            return null;
+            return;
         }
     }
-
 }

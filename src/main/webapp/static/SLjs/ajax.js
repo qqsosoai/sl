@@ -6,12 +6,24 @@ $(function () {
     var pageBtns="";    //分页按钮总个数
     var num=""; //总共显示多少按钮
 
+    $("div.searcharea").on("click","button[type='button']",function () {
+        var loginCode=$("#loginCode").val();
+        var referCode=$("#referCode").val();
+        var roleId=$("#roleId").val();
+        var isStart=$("#isStart").val();
+        if ((loginCode==null || loginCode=='') && (referCode==null || referCode=='')
+            && (roleId==null || roleId=='') && (isStart==null || isStart=='')){//判断用户是否输入条件
+            return;
+        }
+        pageAjax(1);
+    });
     $("div.pagination ul").on("click","a[name='prev']",function () {//上一页按钮绑定事件
         if (pageIndex<=1){//判断用户是否在首页
             return;
         }
         pageAjax(pageIndex-1);
     });
+
     $("div.pagination ul").on("click","a[name='next']",function () {//下一页绑定事件
         if (pageIndex>=pageCount){//用户在末页点击了下一页
             return;
@@ -30,7 +42,7 @@ $(function () {
             url:"/backend/userlist.html",
             type:"POST",
             data:{pageIndex:pageIndex,loginCode:$("#loginCode").val(),
-                referCode:$("#referCode").val(),roleId:$("#s_roleId").val(),
+                referCode:$("#referCode").val(),roleId:$("#roleId").val(),
                 isStart:$("#isStart").val()},
             dataType:"json",
             success:callBack
@@ -46,7 +58,7 @@ $(function () {
                     +"   <td class='center'>"+this.userTypeName +"</td>"
                     +"   <td class='center'>"+this.referCode+"</td>"
                     +"   <td class='center'>"
-                    +"   <input type='checkbox'"+function(){if(this.isStart==1){return "checked='true'"}}+" disabled='disabled'>"
+                    +"   <input type='checkbox'"+isOn(this.isStart)+" disabled='disabled'>"
                     +"   </td>"
                     +"   <td class='center'>"
                     +format(this.createTime)
@@ -80,6 +92,8 @@ $(function () {
             }
         });
     }
+    //
+    function isOn(isStart){if(isStart==1){return "checked='true'"}}
     //计算分页按钮
     function paging(){
         if(pageCount <= num && pageCount > 0) {//总页数不足按钮显示数
