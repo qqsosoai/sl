@@ -23,6 +23,10 @@ $(function () {
             $("#modifypwdtip").css("color","red").html("两次密码输入不一致，请重新输入");
             return;
         }
+        if (pass==newpass){
+            $("#modifypwdtip").css("color","red").html("新密码和旧密码不能一致");
+            return;
+        }
         $.ajax({
             url:"/backend/modifyPwd.html",
             type:"POST",

@@ -44,5 +44,9 @@ public class UserServiceImpl implements UserService {
         return mapper.findByLoginCount(user);
     }
 
+    public boolean addUser(User user) throws Exception {
+        return mapper.addUser(user)>0?true:false;
+    }
+
 
 }

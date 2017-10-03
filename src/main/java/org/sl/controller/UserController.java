@@ -3,17 +3,19 @@ package org.sl.controller;
 import com.alibaba.fastjson.JSON;
 import com.sun.deploy.net.HttpResponse;
 import org.apache.log4j.Logger;
+import org.sl.bean.DataDictionary;
 import org.sl.bean.Role;
 import org.sl.bean.User;
+import org.sl.service.DataDictionaryService;
 import org.sl.service.RoleService;
 import org.sl.service.UserService;
-import org.sl.util.Constants;
-import org.sl.util.Menu;
-import org.sl.util.PageUtil;
+import org.sl.util.*;
 import org.sl.util.md5.MyMd5;
+import org.sl.util.redis.CacheApi;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -36,6 +38,10 @@ public class UserController{
     private UserService service;
     @Resource
     private RoleService roleService;
+    @Resource
+    private DataDictionaryService dictionaryService;
+    @Resource(name = "redisApi")
+    private CacheApi cache;
 
     @RequestMapping(value = "/backend/modifyPwd.html",method = RequestMethod.POST)//修改用户登录密码
     @ResponseBody
@@ -73,8 +79,21 @@ public class UserController{
             logger.debug(userList);
             model.addAttribute("userList",userList);
             List<Role> rolesAll = roleService.findRolesAll();//查询所有角色
-            model.addAttribute("roleList",rolesAll);
-            model.addAttribute("page",util);
+            model.addAttribute("roleList",rolesAll);//添加所有角色
+            model.addAttribute("page",util);//添加页面信息
+            List<DataDictionary> dictionaries=null;//获取所有证件类型
+            if (cache.exist("Dictionaries"+ DictionariesTypeConstants.CERTIFICATE_TYPE)){
+                //查询缓存
+                dictionaries= (List<DataDictionary>)
+                        cache.get("Dictionaries"+ DictionariesTypeConstants.CERTIFICATE_TYPE);
+            }else{
+                //查询数据库
+                DataDictionary dictionary=new DataDictionary();
+                dictionary.setTypeCode(DictionariesTypeConstants.CERTIFICATE_TYPE);
+                dictionaries= dictionaryService.findByDataDictionarys(dictionary);
+                cache.set("Dictionaries"+ DictionariesTypeConstants.CERTIFICATE_TYPE,dictionaries);
+            }
+            model.addAttribute("cardTypeList",dictionaries);//添加所有证件类型
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -106,5 +125,77 @@ public class UserController{
             e.printStackTrace();
             return;
         }
+    }
+    @RequestMapping("/backend/loadUserTypeList.html")//处理获取会员类型
+    public void getUserType(HttpServletResponse response) throws IOException {
+        response.setCharacterEncoding("utf-8");
+        PrintWriter writer = response.getWriter();
+        List<DataDictionary> userType=null;
+        //判断缓存中存不存在
+        if (cache.exist("Dictionaries"+DictionariesTypeConstants.USER_TYPE)){
+            userType= (List<DataDictionary>)
+                    cache.get("Dictionaries"+DictionariesTypeConstants.USER_TYPE);
+        }else{//缓存中不存在，查询数据库放入缓存
+            DataDictionary dictionary=new DataDictionary();
+            dictionary.setTypeCode(DictionariesTypeConstants.USER_TYPE);
+            try {
+                userType=dictionaryService.findByDataDictionarys(dictionary);//查询会员类型
+                cache.set("Dictionaries"+DictionariesTypeConstants.USER_TYPE,userType);//添加缓存
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        String s = JSON.toJSONString(userType);
+        writer.print(s);
+        writer.flush();writer.close();
+    }
+    @RequestMapping("/backend/logincodeisexit.html")//判断该用户名是否存在
+    public void loginCodeExist(HttpServletResponse response,User user) throws IOException {
+        PrintWriter writer = response.getWriter();
+        try {
+            if (user==null){//请求错误
+                writer.print("eor");
+                return;
+            }
+            if (user.getId()<0)
+                user.setId(null);
+            if (service.findByLoginCount(user)>0){
+                writer.print("exist");//用户名已存在
+                return;
+            }else{//用户名不存在
+                writer.print("ok");
+                return;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            writer.print("eor");
+            return;
+        }finally {
+            writer.flush();
+            writer.close();
+        }
+    }
+    @RequestMapping("/backend/adduser.html")
+    public String addUser(HttpSession session,User user){
+        User loginUser = (User) session.getAttribute(Constants.SESSION_LOGIN_USER);
+        if (loginUser==null){
+            return "redirect:/login.html";
+        }
+        if (user==null){
+            return "redirect:/backend/userlist.html";
+        }
+        String card = user.getIdCard();
+        String ps = card.substring(card.length() - 6);
+        ps=MyMd5.toMd5String(ps);
+        user.setPassword(ps);
+        user.setPassword2(ps);
+        user.setReferId(loginUser.getReferId());
+        try {
+            boolean b = service.addUser(user);
+            logger.debug(b);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "redirect:/backend/userlist.html";
     }
 }

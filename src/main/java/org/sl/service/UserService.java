@@ -47,4 +47,12 @@ public interface UserService {
      * @throws Exception
      */
     Integer findByUsersCount(User user)throws Exception;
+
+    /**
+     * 添加用户
+     * @param user 用户
+     * @return 是否添加成功
+     * @throws Exception
+     */
+    boolean addUser(User user)throws Exception;
 }

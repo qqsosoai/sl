@@ -53,6 +53,9 @@
             <if test="isStart!=null and isStart&gt;0 and isStart&lt;3">
                 and isStart=#{isStart}
             </if>
+            <if test="id!=null">
+                AND id != #{id}
+            </if>
         </trim>
     </select>
     <update id="updateByUser" parameterType="User">
@@ -90,12 +93,29 @@
         </set>
         where id = #{id}
     </update>
+    <insert id="addUser" parameterType="User">
+        INSERT INTO au_user( <include refid="insert"/> )
+        VALUES (#{loginCode},#{password},#{password2},#{userName},#{sex}
+        ,#{birthday},#{cardType},#{cardTypeName},#{idCard},
+        #{country},#{mobile},#{email},#{userAddress},#{postCode},now(),
+        #{referId},#{referCode},#{roleId},#{roleName},#{userType},#{userTypeName},#{isStart},
+        #{lastUpdateTime},#{lastLoginTime},#{bankAccount},#{bankName},#{accountHolder},
+        #{idCardPicPath},#{bankPicPath});
+    </insert><!--添加语句-->
     <sql id="all">
         id,loginCode,password,password2,userName,sex,
             birthday,cardType,cardTypeName,idCard,
             country,mobile,email,userAddress,postCode,createTime,
             referId,referCode,roleId,roleName,userType,userTypeName,isStart,
             lastUpdateTime,lastLoginTime,bankAccount,bankName,accountHolder
+            idCardPicPath,bankPicPath
+    </sql>
+    <sql id="insert">
+        loginCode,password,password2,userName,sex,
+            birthday,cardType,cardTypeName,idCard,
+            country,mobile,email,userAddress,postCode,createTime,
+            referId,referCode,roleId,roleName,userType,userTypeName,isStart,
+            lastUpdateTime,lastLoginTime,bankAccount,bankName,accountHolder,
             idCardPicPath,bankPicPath
     </sql>
 </mapper>
