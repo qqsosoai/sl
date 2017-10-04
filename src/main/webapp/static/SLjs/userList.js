@@ -151,3 +151,79 @@ function checkEmail(str){
     else
         return false;
 }
+
+$("#a_uploadbtnID").click(function () {
+    fileUploadAjax('0','a_fileInputID','button',
+        'a_idPic','/backend/upload.html','a_fileInputIDPath');
+});
+//'0','a_fileInputID','a_uploadbtnID','a_idPic','a_fileInputIDPath'
+//type：上传文件类型(修改，新增);file：文件上传ID,btn：上传按钮,showImg：图片显示区,url：请求地址,hidden：存放图片路径隐藏域ID
+function fileUploadAjax(type,file,btn,showImg,url,hidden) {
+    alert($("#"+file).val());
+    if ($("#"+file).val()==null || $("#"+file).val()==''){
+        alert("请选择文件");
+        return;
+    }
+    $.ajaxFileUpload
+    ({
+        url:url, //处理上传文件的服务端
+        secureuri:false,
+        fileElementId:file,
+        dataType: 'json',
+        success: function(data) {
+            data = data.replace(/(^\s*)|(\s*$)/g, "");
+            if(data == "1"){
+                alert("上传文件大小不能超过50000K！");
+                $("#uniform-"+file+" span:first").html('无文件');
+                $("input[name='"+file+"']").change(function(){//标签选择器
+                    var fn = $("input[name='"+t1+"']").val(); //取出要上传的文件名
+                    if($.browser.msie){//判断浏览器（因为不同的浏览器，取出来内容不一样）
+                        fn = fn.substring(fn.lastIndexOf("\\")+1);//我们只取文件名
+                    }
+                    $("#uniform-"+file+" span:first").html(fn);
+                });
+            }else if(data == "2"){
+                alert("上传图片格式不正确");
+                $("#uniform-"+file+" span:first").html('无文件');
+                $("input[name='"+file+"']").change(function(){
+                    var fn = $("input[name='"+file+"']").val();
+                    if($.browser.msie){
+                        fn = fn.substring(fn.lastIndexOf("\\")+1);
+                    }
+                    $("#uniform-"+file+" span:first").html(fn);
+                });
+            } else if(data == "3"){
+                alert("上传图片失败请重新上传");
+                $("#uniform-"+file+" span:first").html('无文件');
+                $("input[name='"+file+"']").change(function(){
+                    var fn = $("input[name='"+file+"']").val();
+                    if($.browser.msie){
+                        fn = fn.substring(fn.lastIndexOf("\\")+1);
+                    }
+                    $("#uniform-"+file+" span:first").html(fn);
+                });
+            }else{
+                var path=data;
+                $("#"+showImg).html("<p " +
+                    "onclick=\"delpic('"+type+"','"+showImg+"','"+path+"','"+btn+"')\">x<span>" +
+                    "<img src='"+path+"?"+Math.random()+"'></span></p>");
+                $("#"+btn).hide();
+                $("#"+hidden).val(path);
+                $("input[name='"+file+"']").change(function(){
+                    var fn = $("input[name='"+file+"']").val();
+                    if($.browser.msie){
+                        fn = fn.substring(fn.lastIndexOf("\\")+1);
+                    }
+                    $("#uniform-"+file+" span:first").html(fn);
+                });
+            }
+        },
+        error: function() {
+            alert("上传失败！");
+        }
+    });
+}
+//删除图片方法
+function delpic(type,img,path,btn) {
+    
+}

@@ -64,7 +64,7 @@
 	<!-- The fav icon -->
 	<link rel="shortcut icon" href="/static/img/favicon.ico">
 	<script type="text/javascript"> var tt = '${jsonMenu}';</script>
-	<script src="/static/js/jquery-1.8.3.min.js"></script>
+	<script src="/static/js/jquery-3.2.1.js"></script>
 </head>
 
 <body>

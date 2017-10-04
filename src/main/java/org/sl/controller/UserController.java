@@ -1,7 +1,10 @@
 package org.sl.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.sun.deploy.net.HttpResponse;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.sl.bean.DataDictionary;
 import org.sl.bean.Role;
@@ -15,17 +18,17 @@ import org.sl.util.redis.CacheApi;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import javax.json.Json;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by hasee on 2017/9/30.
@@ -175,7 +178,7 @@ public class UserController{
             writer.close();
         }
     }
-    @RequestMapping("/backend/adduser.html")
+    @RequestMapping("/backend/adduser.html")//处理用户添加
     public String addUser(HttpSession session,User user){
         User loginUser = (User) session.getAttribute(Constants.SESSION_LOGIN_USER);
         if (loginUser==null){
@@ -197,5 +200,83 @@ public class UserController{
             e.printStackTrace();
         }
         return "redirect:/backend/userlist.html";
+    }
+    @RequestMapping("/backend/upload.html")
+    @ResponseBody
+    public String ajaxFileUpload(@RequestParam(value = "a_fileInputID",required = false)
+                                  MultipartFile cardFile,
+                                 @RequestParam(value = "a_fileInputBank", required = false)
+                                  MultipartFile bankFile,
+                                 @RequestParam(value = "m_fileInputID",required = false)
+                                  MultipartFile mCardFile,
+                                 @RequestParam(value = "m_fileInputBank",required = false)
+                                  MultipartFile mBankFile,
+                                 HttpServletRequest request){
+
+        if (cardFile!=null) {//判断用户上传增加身份证
+            String result = isUpload(cardFile);
+            if (result!=null)
+                return result;
+            return upload(cardFile,request);
+        } else if(bankFile!=null){//判断用户上传增加银行卡
+            String result = isUpload(bankFile);
+            if (result!=null)
+                return result;
+            return upload(bankFile,request);
+        } else if(mCardFile!=null){//判断用户上传修改身份证
+            String result = isUpload(mCardFile);
+            if (result!=null)
+                return result;
+            return upload(mCardFile,request);
+        } else if(mBankFile!=null){//判断用户上传修改银行卡
+            String result = isUpload(mBankFile);
+            if (result!=null)
+                return result;
+            return upload(mBankFile,request);
+        }
+        return "3";
+    }
+    //判断文件上传是否符合规范,获取字典表上传文件大小判断，判断用户上传的图片格式
+    private String isUpload(MultipartFile file){
+        int fileSize=50000;
+        try {
+            if (cache.exist("Dictionaries"+DictionariesTypeConstants.UPLOAD_PRIVATE_MAN)){
+                List<DataDictionary> list = (List<DataDictionary>) cache.get(
+                        "Dictionaries" + DictionariesTypeConstants.UPLOAD_PRIVATE_MAN);
+                fileSize=Integer.parseInt(list.get(0).getValueName());
+            }else{
+                DataDictionary dictionary=new DataDictionary();
+                dictionary.setTypeCode(DictionariesTypeConstants.UPLOAD_PRIVATE_MAN);//获取上传大小
+                List<DataDictionary> list = dictionaryService.findByDataDictionarys(dictionary);
+                fileSize=Integer.parseInt(list.get(0).getValueName());
+                cache.set("Dictionaries"+DictionariesTypeConstants.UPLOAD_PRIVATE_MAN,list);//添加缓存
+            }
+            if (file.getSize()>fileSize){
+                return "1";
+            }
+            String suffix = FilenameUtils.getExtension(file.getOriginalFilename());
+            if (!(suffix.equalsIgnoreCase("jpg") || suffix.equalsIgnoreCase("png")
+                ||suffix.equalsIgnoreCase("jpeg") || suffix.equalsIgnoreCase("pneg"))){
+                return "2";
+            }
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "3";
+        }
+    }
+    //保存方法
+    private String upload(MultipartFile file,HttpServletRequest request){
+        String path=request.getSession().getServletContext()
+                .getRealPath("static"+ File.separator+"uploadFiles");//上传文件路径
+        String fileName=System.currentTimeMillis()+ new Random().nextInt(10000000)+"_IDcard.jpg";
+        try {
+            File targetFile=new File(path,fileName);
+            file.transferTo(targetFile);
+            return request.getContextPath()+"/static/uploadfiles/"+fileName;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "3";
+        }
     }
 }
